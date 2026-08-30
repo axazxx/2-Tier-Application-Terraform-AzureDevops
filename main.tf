@@ -191,9 +191,10 @@ resource "azurerm_network_interface_backend_address_pool_association" "web_nic_b
 resource "azurerm_linux_virtual_machine" "web_vm" {
   count               = 2
   name                = "web_vm-${count.index + 1}"
+  computer_name       = "webvm${count.index + 1}"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  size                = "Standard_B1s"
+  size                = "Standard_F1als_v7"
   admin_username      = "adminuser"
   zone                = tostring(count.index + 1)
 
@@ -214,7 +215,7 @@ resource "azurerm_linux_virtual_machine" "web_vm" {
   source_image_reference {
     publisher = "Canonical"
     offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
+    sku       = "22_04-lts-gen2"
     version   = "latest"
   }
 
