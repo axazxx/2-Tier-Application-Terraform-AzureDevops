@@ -99,18 +99,22 @@
   
 4. Create a storage account & a container in it named tfstate:
 - Storage Account syntax:
-  ```az storage account create \
+  ```
+  az storage account create \
   --name "anasstorageaccount" \
   --resource-group "2-tier-group-eastus" \
   --location "eastus" \
   --sku "Standard_LRS" \
-  --encryption-services blob```
+  --encryption-services blob
+  ```
 
 - Container syntax:
-  ```az storage container create \
+  ```
+  az storage container create \
   --name "tfstate" \
   --account-name "anasstorageaccount" \
-  --auth-mode login```
+  --auth-mode login
+  ```
   
 5. Initialize Terraform & Remote Backend:
    `terraform init -reconfigure`
@@ -191,20 +195,22 @@ Install Azure CLI syntax:
 
 Install Terraform syntax:
 
-```sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+```
+sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee/etc/apt/sources.list.d/hashicorp.list
-sudo apt-get update && sudo apt-get install -y terraform```
+sudo apt-get update && sudo apt-get install -y terraform
+```
 
 **Step 7:** Run the Agent as a Systemd Background Service
 
-```cd ~/myagent
+```
+cd ~/myagent
 sudo ./svc.sh install
 sudo ./svc.sh start
-sudo ./svc.sh status```
-
+sudo ./svc.sh status
+```
 - Navigate back to Project Settings ➔ Agent pools ➔ [Your-Pool] ➔ Agents in Azure DevOps to confirm the agent status is Online.
-
 - import repos from github in azure repos
 - go to azure pipelines and create a new pipeline for the project and run the pipeline
 - final ouput will be an IP address which you can use in a browser to check if its deployed.
