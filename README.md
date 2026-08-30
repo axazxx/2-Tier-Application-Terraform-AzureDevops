@@ -1,4 +1,4 @@
-## 🏗 Architecture Overview
+# 🏗 Architecture Overview
 
 ```text
 +----------------------------------------------------------------------------------------------------+
@@ -68,39 +68,39 @@
 (AI Generated Flowchart)
 
 
-# OVERVIEW
+## OVERVIEW
 - This project establishes a production-ready infrastructure on Microsoft Azure by deploying a two-tier architecture across Availability Zone 1 and
-  Availability Zone 2 in the East US region which showcases its capability as a *High Availability* architecture.
+  Availability Zone 2 in the East US region which showcases its capability as a **High Availability** architecture.
 - The entire infrastructure lifecycle is fully automated via Infrastructure as Code using Terraform,leveraging an Azure Blob remote state backend and a declarative
   two-stage Azure DevOps YAML pipeline running on a self-hosted Linux agent to validate, plan, artifact, and auto-provision resources consistently across local
   and CI/CD environments.
 - Incoming user traffic is evenly distributed across the two Nginx web instances via an Azure Standard Load Balancer with active health checkups.
-- The architecture consists of Two tiers; Web & Db. Both have nsg's attached restricting everyone inbound to Db except Web. This portrays *Strong security*.
-- The State file is stored in a container in Storage account on Azure. This also showcases *Strong security* & how we can secure State file which may contain secrets, keys, private IPs
+- The architecture consists of Two tiers; Web & Db. Both have nsg's attached restricting everyone inbound to Db except Web. This portrays **Strong security**.
+- The State file is stored in a container in Storage account on Azure. This also showcases **Strong security** & how we can secure State file which may contain secrets, keys, private IPs
 
-# TO RUN LOCALLY:-
-#Prerequisites
--Terraform CLI (v1.5+)
--Azure CLI (az)
--SSH Key pair generated on your machine (~/.ssh/id_rsa.pub)
+## TO RUN LOCALLY:-
+### Prerequisites
+- Terraform CLI (v1.5+)
+- Azure CLI (az)
+- SSH Key pair generated on your machine (~/.ssh/id_rsa.pub)
 
-#Step-by-Step Execution
+### Step-by-Step Execution
 - Clone the repository: ~ git clone https://github.com/axazxx/2-Tier-Application-Terraform-AzureDevops.git
   ~ cd 2-Tier-Application-Terraform-AzureDevops
 
 - Authenticate with Azure: ~ az login
 
 - Create a storage account & a container in it named tfstate
-- ~ az storage account create \
+  `~ az storage account create \
   --name "anasstorageaccount" \
   --resource-group "2-tier-group-eastus" \
   --location "eastus" \
   --sku "Standard_LRS" \
   --encryption-services blob
-- ~ az storage container create \
+  ~ az storage container create \
   --name "tfstate" \
   --account-name "anasstorageaccount" \
-  --auth-mode login
+  --auth-mode login`
   
 - Initialize Terraform & Remote Backend: ~ terraform init -reconfigure
 
