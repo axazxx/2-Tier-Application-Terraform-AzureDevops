@@ -96,13 +96,11 @@
    ```
    
 2. Authenticate with Azure:
-   syntax:
    ```
    az login
    ```
 
 4. Create a resource Group:
-   syntax:
    ```
    az group create -n 2-tier-group-eastus -l eastus
    ```
@@ -132,10 +130,12 @@
    ```
    
 6. Review Plan & Deploy:
-   `terraform plan`
-   `terraform apply -auto-approve`
+   ```
+   terraform plan
+   terraform apply -auto-approve
+   ```
 
-7. Check the Deployment:
+8. Check the Deployment:
    Open the Load Balancer IP you got and paste it in your browser
    ```
    http://<load_balancer_ip>
@@ -143,7 +143,7 @@
   or
   ```
   curl http://<load_balancer_ip>
-```
+  ```
 
 ## TO RUN ON AZURE DEVOPS
 Create a self-hosted-agent named pool and create an linux agent on top of an azure linux vm. 
@@ -173,39 +173,39 @@ Scopes: Select Custom defined ➔ under Agent Pools, check Read & manage.
 
 1. SSH into your target Linux VM from your local terminal:
 
-syntax: ```
-ssh -i /path/to/your-key.pem azureuser@<VM-Public-IP>
-```
+   ```
+   ssh -i /path/to/your-key.pem azureuser@<VM-Public-IP>
+   ```
 
 2. Inside the VM, create the agent folder and download the agent package:
    
-syntax: ```
-mkdir -p ~/myagent && cd ~/myagent
-```
+   ```
+   mkdir -p ~/myagent && cd ~/myagent
+   ```
 
 3. Download the latest Linux x64 agent package:
 
-syntax: ```
-curl -O https://vstsagentpackage.azureedge.net/agent/3.248.0/vsts-agent-linux-x64-3.248.0.tar.gz
-```
+   ```
+   curl -O https://vstsagentpackage.azureedge.net/agent/3.248.0/vsts-agent-linux-x64-3.248.0.tar.gz
+   ```
 
 4. Extract the archive:
 
-syntax: ```
-tar -zxvf vsts-agent-linux-x64-*.tar.gz
-```
+   ```
+   tar -zxvf vsts-agent-linux-x64-*.tar.gz
+   ```
 
 **Step 4:** Install System Dependencies:
 
-syntax: ```
-sudo ./bin/installdependencies.sh
-```
+    ```
+    sudo ./bin/installdependencies.sh
+    ```
 
 **Step 5:** Configure the Agent:
 
-syntax: ```
-./config.sh
-```
+    ```
+    ./config.sh
+    ```
 
 
 - Enter the required details when prompted:
@@ -226,9 +226,9 @@ Work folder: Press Enter (defaults to _work)
 
 Install Azure CLI syntax:
 
-```
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-```
+    ```
+    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    ```
 
 Install Terraform syntax:
 
