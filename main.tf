@@ -164,15 +164,7 @@ resource "azurerm_lb_rule" "web_lb_rule" {
 }
   
 #dedicated public IPs for direct ssh access to web and db VMs
-resource "azurerm_public_ip" "web_vm_public_ip" {
-  count               = 2
-  name                = "web_vm_public_ip-${count.index + 1}"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  zones              = [tostring(count.index + 1)]
-}
+#(deleted as its taking more ip space than allowed on this subscription)
 
 #Network Interfaces (Attached to Load Balancer Pool + Dedicated SSH IP)
 resource "azurerm_network_interface" "web_vm_nic" {
@@ -185,7 +177,6 @@ resource "azurerm_network_interface" "web_vm_nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.web_subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.web_vm_public_ip[count.index].id
   }
 }   
 
