@@ -19,7 +19,7 @@ provider "azurerm" {
 }
 
 #Resource group
-resource "azurerm_resource_group" "rg" {
+data "azurerm_resource_group" "rg" {
   name     = "2-tier-group-eastus"
   location = "eastus"
 }
@@ -28,14 +28,14 @@ resource "azurerm_resource_group" "rg" {
 resource "azurerm_virtual_network" "vnet" {
   name                = "myVnet"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 }
 
 #web subnet
 resource "azurerm_subnet" "web_subnet" {
   name                 = "web_Subnet"
-  resource_group_name  = azurerm_resource_group.rg.name
+  resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 }
@@ -43,7 +43,7 @@ resource "azurerm_subnet" "web_subnet" {
 #db subnet
 resource "azurerm_subnet" "db_subnet" {
   name                 = "db_Subnet"
-  resource_group_name  = azurerm_resource_group.rg.name
+  resource_group_name  = data.azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.2.0/24"]
 }
@@ -51,8 +51,8 @@ resource "azurerm_subnet" "db_subnet" {
 #NSG for web subnet
 resource "azurerm_network_security_group" "web_nsg" {
   name                = "web_nsg"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   security_rule {
     name                       = "Allow-HTTP"
@@ -87,8 +87,8 @@ resource "azurerm_subnet_network_security_group_association" "web_assoc" {
 #NSG for db subnet
 resource "azurerm_network_security_group" "db_nsg" {
   name                = "db_nsg"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   security_rule {
     name                       = "Allow-web-to-db"
@@ -123,8 +123,8 @@ resource "azurerm_subnet_network_security_group_association" "db_assoc" {
 #Public IP & Load Balancer for web tier
 resource "azurerm_public_ip" "web_public_ip" {
   name                = "web_public_ip"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
   zones              = ["1", "2"]
@@ -132,8 +132,8 @@ resource "azurerm_public_ip" "web_public_ip" {
 
 resource "azurerm_lb" "web_lb" {
   name                = "web_lb"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   sku                 = "Standard"
 
   frontend_ip_configuration {
@@ -168,8 +168,8 @@ resource "azurerm_lb_rule" "web_lb_rule" {
 resource "azurerm_public_ip" "web_vm_public_ip" {
   count               = 2
   name                = "web_vm_public_ip-${count.index + 1}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
   zones              = [tostring(count.index + 1)]
@@ -179,8 +179,8 @@ resource "azurerm_public_ip" "web_vm_public_ip" {
 resource "azurerm_network_interface" "web_vm_nic" {
   count               = 2
   name                = "web_vm_nic-${count.index + 1}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
 
   ip_configuration {
     name                          = "internal"
@@ -201,8 +201,8 @@ resource "azurerm_network_interface_backend_address_pool_association" "web_nic_b
 resource "azurerm_linux_virtual_machine" "web_vm" {
   count               = 2
   name                = "web_vm-${count.index + 1}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
   size                = "Standard_B1s"
   admin_username      = "adminuser"
   zone                = tostring(count.index + 1)
