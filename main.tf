@@ -21,7 +21,6 @@ provider "azurerm" {
 #Resource group
 data "azurerm_resource_group" "rg" {
   name     = "2-tier-group-eastus"
-  location = "eastus"
 }
 
 #virtual network
