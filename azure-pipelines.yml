@@ -1,0 +1,60 @@
+trigger:
+  branches:
+    include:
+      - main
+
+# Pool where your Linux agent is registered
+pool:
+  name: 'self-hosted-agent'
+
+variables:
+  serviceConnection: 'Azure-Service-Connection'
+
+stages:
+#Stage1 Validate&Plan
+- stage: Terraform_Plan
+  displayName: '1. Validate & Plan'
+  jobs:
+  - job: PlanJob
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Terraform Init & Plan'
+      inputs:
+        azureSubscription: '$(serviceConnection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          terraform init -reconfigure
+          terraform validate
+          terraform plan -out=tfplan
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Save Plan Artifact'
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/tfplan'
+        artifact: 'tfplan'
+
+#stage2 provision infrastructure
+- stage: Terraform_Apply
+  displayName: '2. Provision Infrastructure'
+  dependsOn: Terraform_Plan
+  condition: succeeded()
+  jobs:
+  - deployment: DeployJob
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: 'tfplan'
+
+          - task: AzureCLI@2
+            displayName: 'Apply Terraform'
+            inputs:
+              azureSubscription: '$(serviceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                terraform init -reconfigure
+                terraform apply -auto-approve $(Pipeline.Workspace)/tfplan/tfplan
