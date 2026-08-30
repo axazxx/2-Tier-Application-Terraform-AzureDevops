@@ -103,7 +103,7 @@
   --sku "Standard_LRS" \
   --encryption-services blob`
 
-- Container syntax
+- Container syntax:
   ` az storage container create \
   --name "tfstate" \
   --account-name "anasstorageaccount" \
@@ -116,64 +116,69 @@
    `terraform plan`
    `terraform apply -auto-approve`
 
-7. See the Deployment:
-- Open the Load Balancer IP you got in your browser
+7. Check the Deployment:
+   Open the Load Balancer IP you got and paste it in your browser
   `http://<load_balancer_ip>`
   or
   `curl http://<load_balancer_ip>`
 
 ## TO RUN ON AZURE DEVOPS
-- create a self-hosted-agent named pool and create an linux agent on top of an azure linux vm. Follow these steps:-
+Create a self-hosted-agent named pool and create an linux agent on top of an azure linux vm. 
+
+## Follow these steps:-
+
 **Step 1:** Generate a Personal Access Token (PAT) in Azure DevOps;
-1.In the top right corner on Azure Devops, click your profile icon and select User settings ➔ Personal access tokens.
-2.Click + New Token.
-3.Configure the token details:
+1. In the top right corner on Azure Devops, click your profile icon and select User settings ➔ Personal access tokens.
+2. Click + New Token.
+3. Configure the token details:
 Name: vmagent-pat
 Organization: Select your organization.
 Scopes: Select Custom defined ➔ under Agent Pools, check Read & manage.
-4.Click Create and copy the generated token immediately.
+4. Click Create and copy the generated token immediately.
 
 **Step 2:** Create or Select the Agent Pool
-1.Go to Organization Settings (or Project Settings). Under Pipelines, click Agent pools.
-2.Select an existing pool (self-hosted-agent) or click Add pool to create a new one.
+1. Go to Organization Settings (or Project Settings). Under Pipelines, click Agent pools.
+2. Select an existing pool (self-hosted-agent) or click Add pool to create a new one.
 
 **Step 3:** Connect to the Linux VM and Download the Agent
 1. SSH into your target Linux VM from your local terminal:
 
-Bash
 `ssh -i /path/to/your-key.pem azureuser@<VM-Public-IP>`
+
 2. Inside the VM, create the agent folder and download the agent package:
-Bash
+   
 `mkdir -p ~/myagent && cd ~/myagent`
 
-3. Download the latest Linux x64 agent package
+4. Download the latest Linux x64 agent package
 `curl -O https://vstsagentpackage.azureedge.net/agent/3.248.0/vsts-agent-linux-x64-3.248.0.tar.gz`
 
-4. Extract the archive
+5. Extract the archive
 `tar -zxvf vsts-agent-linux-x64-*.tar.gz`
 
 **Step 4:** Install System Dependencies
 
-Bash
 `sudo ./bin/installdependencies.sh`
 
 **Step 5:** Configure the Agent
 
-Bash
 `./config.sh`
 
 - Enter the required details when prompted:
 
 Server URL: [https://dev.azure.com/](https://dev.azure.com/)<your-organization-name>
+
 Authentication type: Press Enter (defaults to PAT)
+
 Personal access token: Paste your PAT generated in Step 1
+
 Agent pool: Enter the pool name (e.g., self-hosted-agent or Default)
+
 Agent name: Enter a name for the agent (e.g., vmagent)
+
 Work folder: Press Enter (defaults to _work)
 
 **Step 6:** Install Required Build Tools (Azure CLI & Terraform)
 
-Bash
 #Install Azure CLI
 `curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash`
 
@@ -184,7 +189,7 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 sudo apt-get update && sudo apt-get install -y terraform`
 
 **Step 7:** Run the Agent as a Systemd Background Service
-Bash
+
 `cd ~/myagent
 sudo ./svc.sh install
 sudo ./svc.sh start
