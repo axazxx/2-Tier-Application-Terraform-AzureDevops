@@ -1,10 +1,76 @@
++----------------------------------------------------------------------------------------------------+
+|                                    AZURE REGION: East US                                           |
+|  Resource Group: 2-tier-group-eastus                                                               |
+|                                                                                                    |
+|                             +-----------------------------------+                                  |
+|                             |      Internet / Web Users         |                                  |
+|                             +-----------------+-----------------+                                  |
+|                                               |                                                    |
+|                                               v                                                    |
+|                             +-----------------------------------+                                  |
+|                             |   Public IP (web_public_ip)       |                                  |
+|                             +-----------------+-----------------+                                  |
+|                                               |                                                    |
+|                                               v                                                    |
+|                             +-----------------------------------+                                  |
+|                             |   Azure Standard Load Balancer    |                                  |
+|                             |   - Frontend: web_frontend        |                                  |
+|                             |   - Rule: Port 80 -> Backend Pool |                                  |
+|                             |   - Health Probe: HTTP Port 80    |                                  |
+|                             +-----------------+-----------------+                                  |
+|                                               |                                                    |
+|  Virtual Network: myVnet (10.0.0.0/16)        |                                                    |
+|  +--------------------------------------------|-------------------------------------------------+  |
+|  |  Tier 1: Web Subnet (10.0.1.0/24)          |                                                 |  |
+|  |  NSG: web_nsg (Allow HTTP: 80, Allow SSH: 22)                                                |  |
+|  |                                            |                                                 |  |
+|  |             +------------------------------+------------------------------+                  |  |
+|  |             |                                                             |                  |  |
+|  |             v                                                             v                  |  |
+|  |    +-----------------------------+                               +------------------------+  |  |
+|  |    |     Availability Zone 1     |                               |   Availability Zone 2  |  |  |
+|  |    |                             |                               |                        |  |  |
+|  |    |  +-----------------------+  |                               |  +------------------+  |  |  |
+|  |    |  | web_vm-1 (Ubuntu 22)  |  |                               |  | web_vm-2 (Ubuntu)|  |  |  |
+|  |    |  | - Standard_B1s        |  |                               |  | - Standard_B1s   |  |  |  |
+|  |    |  | - Nginx Web Server    |  |                               |  | - Nginx Server   |  |  |  |
+|  |    |  +-----------+-----------+  |                               |  +--------+---------+  |  |  |
+|  |    |              |              |                               |           |            |  |  |
+|  |    |  +-----------+-----------+  |                               |  +--------+---------+  |  |  |
+|  |    |  | web_vm_nic-1          |  |                               |  | web_vm_nic-2     |  |  |  |
+|  |    |  +-----------+-----------+  |                               |  +--------+---------+  |  |  |
+|  |    +--------------|--------------+                               +-----------|------------+  |  |
+|  |                   |                                                          |               |  |
+|  |                   | [SSH Port 22]                                            | [SSH Port 22] |  |
+|  |                   v                                                          v               |  |
+|  |        +--------------------+                                     +--------------------+     |  |
+|  |        | web_vm_public_ip-1 |                                     | web_vm_public_ip-2 |     |  |
+|  |        | (Admin SSH Only)   |                                     | (Admin SSH Only)   |     |  |
+|  |        +--------------------+                                     +--------------------+     |  |
+|  +-------------------|----------------------------------------------------------|---------------+  |
+|                      |                                                          |                  |
+|                      | (Allowed: Port 3306 MySQL)                               |                  |
+|                      +----------------------------+-----------------------------+                  |
+|                                                   |                                                |
+|  +------------------------------------------------v---------------------------------------------+  |
+|  |  Tier 2: DB Subnet (10.0.2.0/24)                                                             |  |
+|  |  NSG: db_nsg                                                                                 |  |
+|  |  - Inbound Rule: Allow Port 3306 from 10.0.1.0/24 (Web Subnet Only)                          |  |
+|  |  - Inbound Rule: Deny All Traffic from Internet                                              |  |
+|  |                                                                                              |  |
+|  |  [Reserved Private Database Tier / Subnet for MySQL / Managed DB Services]                   |  |
+|  +----------------------------------------------------------------------------------------------+  |
++----------------------------------------------------------------------------------------------------+
+(AI Generated Flowchart)
+
+
 # OVERVIEW
 - This project establishes a production-ready infrastructure on Microsoft Azure by deploying a two-tier architecture across Availability Zone 1 and
   Availability Zone 2 in the East US region which showcases its capability as a High Availability architecture.
 - The entire infrastructure lifecycle is fully automated via Infrastructure as Code using Terraform,leveraging an Azure Blob remote state backend and a declarative
   two-stage Azure DevOps YAML pipeline running on a self-hosted Linux agent to validate, plan, artifact, and auto-provision resources consistently across local
   and CI/CD environments.
-- Incoming user traffic is evenly distributed across multiple Nginx web instances via an Azure Standard Load Balancer with active health checkups.
+- Incoming user traffic is evenly distributed across the two Nginx web instances via an Azure Standard Load Balancer with active health checkups.
 - The architecture consists of Two tiers; Web & Db. Both have nsg's attached restricting everyone inbound to Db except Web. This portrays good security.
 
 # TO RUN LOCALLY:-
