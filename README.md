@@ -94,17 +94,20 @@
    ```
    cd 2-Tier-Application-Terraform-AzureDevops
    ```
+   
 2. Authenticate with Azure:
-   syntax: ```
+   syntax:
+   ```
    az login
    ```
 
-3. Create a resource Group:
-   syntax: ```
+4. Create a resource Group:
+   syntax:
+   ```
    az group create -n 2-tier-group-eastus -l eastus
    ```
    
-4. Create a storage account & a container in it named tfstate:
+6. Create a storage account & a container in it named tfstate:
 - Storage Account syntax:
   ```
   az storage account create \
