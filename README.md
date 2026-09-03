@@ -100,17 +100,17 @@
    az login
    ```
 
-4. Create a resource Group:
+3. Create a resource Group:
    ```
-   az group create -n 2-tier-group-eastus -l eastus
+   az group create -n tfstate-rg -l eastus
    ```
    
-6. Create a storage account & a container in it named tfstate:
+4. Create a storage account & a container in it named tfstate:
 - Storage Account syntax:
   ```
   az storage account create \
-  --name "anasstorageaccount" \
-  --resource-group "2-tier-group-eastus" \
+  --name "anasstorage2026" \
+  --resource-group "tfstate-rg" \
   --location "eastus" \
   --sku "Standard_LRS" \
   --encryption-services blob
@@ -120,7 +120,7 @@
   ```
   az storage container create \
   --name "tfstate" \
-  --account-name "anasstorageaccount" \
+  --account-name "anasstorage2026" \
   --auth-mode login
   ```
   
@@ -135,7 +135,7 @@
    terraform apply -auto-approve
    ```
 
-8. Check the Deployment:
+7. Check the Deployment:
    Open the Load Balancer IP you got and paste it in your browser
    ```
    http://<load_balancer_ip>
@@ -251,3 +251,27 @@ sudo ./svc.sh status
 - import repos from github in azure repos
 - go to azure pipelines and create a new pipeline for the project and run the pipeline
 - final ouput will be an IP address which you can use in a browser to check if its deployed.
+
+## How to show High availability
+
+1. In order to show the architectures high availability you will have to deallocate one vm to show that the traffic redirects to another vm.
+
+syntax:
+```
+az vm deallocate --resource-group 2-tier-group-eastus --name web_vm1
+```
+
+or
+
+```
+az vm deallocate --resource-group 2-tier-group-eastus --name web_vm2
+```
+
+2. Re-enter the http with the ip and youll see the result which shows a different vm running.
+
+3. You can reallocate the vm through this command
+
+syntax:
+```
+az vm start --resource-group 2-tier-group-eastus --name web_vm1
+```
