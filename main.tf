@@ -7,8 +7,8 @@ terraform {
   }
 #backend configuration
   backend "azurerm" {
-    resource_group_name  = "2-tier-group-eastus"
-    storage_account_name = "anasstorageaccount"
+    resource_group_name  = "tfstate-rg"
+    storage_account_name = "anasstorage2026"
     container_name       = "tfstate"
     key                  = "terraform.tfstate"
   }
@@ -146,6 +146,7 @@ resource "azurerm_lb_backend_address_pool" "web_backend_pool" {
   loadbalancer_id     = azurerm_lb.web_lb.id
 }
   
+#automated checkups (probe)
 resource "azurerm_lb_probe" "web_lb_probe" {
   name                = "web_lb_probe"
   loadbalancer_id     = azurerm_lb.web_lb.id
@@ -166,7 +167,7 @@ resource "azurerm_lb_rule" "web_lb_rule" {
 #dedicated public IPs for direct ssh access to web and db VMs
 #(deleted as its taking more ip space than allowed on this subscription)
 
-#Network Interfaces (Attached to Load Balancer Pool + Dedicated SSH IP)
+#Network Interface Cards (NICs) for web VMs
 resource "azurerm_network_interface" "web_vm_nic" {
   count               = 2
   name                = "web_vm_nic-${count.index + 1}"
@@ -198,6 +199,7 @@ resource "azurerm_linux_virtual_machine" "web_vm" {
   admin_username      = "adminuser"
   zone                = tostring(count.index + 1)
 
+#Attaching NICs to VMs
   network_interface_ids = [
     azurerm_network_interface.web_vm_nic[count.index].id,
   ]
